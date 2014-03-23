@@ -26,7 +26,7 @@ int yReading;
 void setup(){
   println(Serial.list());
 
-  myPort = new Serial(this, "/dev/tty.usbmodemfd121", 9600);
+  myPort = new Serial(this, "/dev/tty.usbmodem411", 9600);
 
   // Read first line in case its a partial message
   myPort.readStringUntil('\n');
