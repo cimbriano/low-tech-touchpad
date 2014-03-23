@@ -20,19 +20,20 @@ String serialMsg = "";
 String[] stringValues;
 int xReading;
 int yReading;
+int REFRESH_RATE = 1000;
 
 // boolean backgroundIsBlack = true;
 
 void setup(){
+  // initialize the drawing window
+  size(512, 200, P2D);
+
   println(Serial.list());
 
-  myPort = new Serial(this, "/dev/tty.usbmodemfd121", 9600);
+  myPort = new Serial(this, "/dev/cu.usbmodemfd121", 9600);
 
   // Read first line in case its a partial message
   myPort.readStringUntil('\n');
-
-  // initialize the drawing window
-  size(512, 200, P2D);
   
   // initialize the minim and out objects
   minim = new Minim(this);
@@ -69,6 +70,11 @@ void draw() {
   
 
   // freqControl.setConstant( freq );
+
+  if(millis() % REFRESH_RATE == 0) {
+    getTouchpadReadingsFromSerial();
+  }
+
   freqControl.setConstant(playingFrequency);
 
   // // erase the window to black
@@ -119,17 +125,21 @@ void keyReleased(){
 }
 
 void setNote(int noteNum){
-  // println("Setting note to " + frequencies[noteNum]);
+  println("Setting note to " + frequencies[noteNum]);
   playingFrequency = frequencies[noteNum];
 }
 
 void turnOff(){
-  // println("Using turnOff to set note to 0.0f");
+  println("Using turnOff to set note to 0.0f");
   playingFrequency = 0.0f; 
 }
 
 void getTouchpadReadingsFromSerial(){
+  println("Starting get readings");
+
   if(myPort.available() > 0){
+    println("Stuff available at port");
+
     serialMsg = myPort.readStringUntil('\n');
 
     if(serialMsg != null) {
@@ -137,19 +147,15 @@ void getTouchpadReadingsFromSerial(){
 
       stringValues = serialMsg.trim().split(",");
 
-      if(stringValues.length != 2) {
-        println("INVALID length of CSV line");
-      } else {
-
-        if(int(stringValues[1]) == -1) {
+        if(stringValues[1].equals("-1")) {
           turnOff();
         } else {
           float f = new Float(stringValues[1]);
-          float noteNum = map(f, 0.0f, 1023.0f, 0.0f, 7.0f);
+          float noteNum = map(f, 0, 1023, 0, 7);
+
           setNote(int(noteNum));
         }
 
-      }
     } // serialMsg != null
   } // myPort.available() > 0
 }
