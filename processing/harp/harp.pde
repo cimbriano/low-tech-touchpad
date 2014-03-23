@@ -32,6 +32,7 @@ void setup(){
 
   myPort = new Serial(this, "/dev/cu.usbmodemfd121", 9600);
 
+
   // Read first line in case its a partial message
   myPort.readStringUntil('\n');
   
