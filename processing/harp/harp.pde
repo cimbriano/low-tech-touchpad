@@ -20,7 +20,7 @@ String serialMsg = "";
 String[] stringValues;
 int xReading;
 int yReading;
-int REFRESH_RATE = 1000;
+int REFRESH_RATE = 10;
 
 // boolean backgroundIsBlack = true;
 
@@ -137,6 +137,7 @@ void turnOff(){
 
 void getTouchpadReadingsFromSerial(){
   println("Starting get readings");
+  println("millis(): " + millis());
 
   if(myPort.available() > 0){
     println("Stuff available at port");
@@ -145,6 +146,8 @@ void getTouchpadReadingsFromSerial(){
 
     if(serialMsg != null) {
       println("Rcvd => '" + serialMsg + "'");
+      
+      if(stringValues.length != 2) return;
 
       stringValues = serialMsg.trim().split(",");
 
